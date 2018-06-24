@@ -1,0 +1,112 @@
+#If VBA7 Then
+    Public Declare PtrSafe Sub Sleep Lib "kernel32" (ByVal dwMilliseconds As LongPtr) 'For 64 Bit Systems
+#Else
+    Public Declare Sub Sleep Lib "kernel32" (ByVal dwMilliseconds As Long) 'For 32 Bit Systems
+#End If
+Sub open_system()
+' Truong hop dang nhap su dung SSO - Single Sign-On
+    Dim SAP As Variant
+    Dim system_name As String
+    SAP = Shell("""!!!Thay duong dan den file Saplogon.exe cua cac ban o day!!!""", vbNormalFocus)
+    
+    Sleep 8000
+    
+    system_name = "!!!Thay ten he thong ban muon dang nhap vao o day!!!"
+    
+    If Not IsObject(sap_app) Then
+        Set SapGuiAuto = GetObject("SAPGUI")
+        Set sap_app = SapGuiAuto.GetScriptingEngine
+    End If
+    If Not IsObject(Connection) Then
+        Set Connection = sap_app.OpenConnection(system_name, True)
+    End If
+    If Not IsObject(session) Then
+        Set session = Connection.Children(0)
+    End If
+    
+    session.findById("wnd[0]").resizeWorkingPane 106, 28, False
+    session.findById("wnd[0]/tbar[0]/okcd").Text = "FB03"
+    session.findById("wnd[0]").sendVKey 0
+    session.findById("wnd[0]/tbar[0]/btn[3]").press
+End Sub
+
+
+
+
+
+
+
+
+
+
+
+
+
+Sub open_system2()
+' Truong hop dang nhap su dung mandant id, username, password
+    Dim SAP As Variant
+    Dim system_name As String
+    SAP = Shell("""!!!Thay duong dan den file Saplogon.exe cua cac ban o day!!!""", vbNormalFocus)
+    
+    Sleep 8000
+    
+    system_name = "!!!Thay ten he thong ban muon dang nhap vao o day!!!"
+    
+    If Not IsObject(sap_app) Then
+        Set SapGuiAuto = GetObject("SAPGUI")
+        Set sap_app = SapGuiAuto.GetScriptingEngine
+    End If
+    If Not IsObject(Connection) Then
+        Set Connection = sap_app.OpenConnection(system_name, True)
+    End If
+    If Not IsObject(session) Then
+        Set session = Connection.Children(0)
+    End If
+    
+    Sleep 10000
+
+    session.findById("wnd[0]").maximize
+    session.findById("wnd[0]/usr/txtRSYST-MANDT").Text = "Dien client ID cua ban"
+    session.findById("wnd[0]/usr/txtRSYST-BNAME").Text = "Dien username vao he thong cua ban"
+    session.findById("wnd[0]/usr/txtRSYST-BCODE").Text = "Dien mat khau vao he thong cua ban"
+    session.findById("wnd[0]/usr/txtRSYST-LANGU").Text = "EN" 'thay doi ngon ngu neu can
+    session.findById("wnd[0]/tbar[0]/btn[0]").press
+    On Error Resume Next
+    session.findById("wnd[1]/usr/radMULTI_LOGON_OPT1").Select
+    session.findById("wnd[1]/usr/radMULTI_LOGON_OPT1").SetFocus
+    session.findById("wnd[1]/tbar[0]/btn[0]").press
+    session.findById("wnd[1]/tbar[0]/btn[12]").press
+    On Error GoTo 0
+End Sub
+Function init() As Object
+    If Not IsObject(sap_app) Then
+       Set SapGuiAuto = GetObject("SAPGUI")
+       Set sap_app = SapGuiAuto.GetScriptingEngine
+    End If
+    If Not IsObject(Connection) Then
+       Set Connection = sap_app.Children(0)
+    End If
+    If Not IsObject(session) Then
+       Set session = Connection.Children(0)
+    End If
+    Set init = session
+End Function
+Sub learn_sap_gui_scripting()
+    Dim session As Object
+    Set session = init()
+
+    session.startTransaction "FB03"
+    session.findById("wnd[0]/tbar[1]/btn[20]").press
+    
+    If LCase(session.ActiveWindow.Text) Like _
+    LCase("*Document List") Then
+        MsgBox "Da o trong man hinh Document List"
+    End If
+    Stop
+    'session.findById("wnd[0]/sbar").Text
+    'session.findById("wnd[0]/usr/chkP_STATS").selected = true
+    'Debug.Print session.findById("wnd[0]/usr/chkP_STATS").Selected
+    'session.findById("wnd[0]/usr/chkP_STATS").selected = false
+    'Debug.Print session.findById("wnd[0]/usr/chkP_STATS").Selected
+    
+End Sub

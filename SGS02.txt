@@ -1,0 +1,5 @@
+Sub open_system()
+    Dim SAP As Variant
+    SAP = Shell("""C:\Program Files (x86)\SAP\FrontEnd\SAPgui\Saplogon.exe""", vbNormalFocus)
+    
+End Sub
